@@ -9,7 +9,7 @@ class Header extends React.Component {
     
     render() {
         const header:any  = (
-            <Navbar  expand="lg" bg="dark" variant="dark">
+            <Navbar  expand="lg" bg="dark" variant="dark" style = {{zIndex: 5}}>
                 {/* Logo for the website, outside NavBar.Collapse so wont be collapsed */}
                 <Navbar.Brand href="#home">
                     <img

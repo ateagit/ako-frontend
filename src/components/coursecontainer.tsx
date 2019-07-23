@@ -15,29 +15,33 @@ class CourseContainer extends React.Component {
         const courseContainer:any = (
 
             // Split into different Card components: e.g. Video Card, Image Card, Text Card
-            <Row >
-                <Col md = {{span: 8, offset: 2}} xl = {{span: 6, offset: 3}}>
-                    <Card style = {cardStyling} >
-                        <Card.Body>
-                            <Card.Title>
-                                Course Title
-                            </Card.Title>
-                            <Card.Text>
-                                Course Description.
-                            </Card.Text>
-                            <Row>
-                                <Col style = {{fontSize: "23px", height: "100%"}}>
-                                    <StarRatingComponent name="rate1" starCount={5} value={3.5} />
-                                </Col>
-                                <Col style = {{textAlign: "right"}}>
-                                    <Button variant="outline-primary"> Start Course </Button>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
-                </Col>
-                
-            </Row>
+            [1, 1, 1, 1, 1, 1].map(i => {
+                return (
+                    <Row style = {{margin: 0}}>
+                        <Col md = {{span: 8, offset: 2}} xl = {{span: 6, offset: 3}}>
+                            <Card style = {cardStyling} >
+                                <Card.Body>
+                                    <Card.Title>
+                                        Course Title
+                                    </Card.Title>
+                                    <Card.Text>
+                                        Course Description.
+                                    </Card.Text>
+                                    <Row>
+                                        <Col style = {{fontSize: "23px", height: "100%"}}>
+                                            <StarRatingComponent name="rate1" starCount={5} value={3.5} />
+                                        </Col>
+                                        <Col style = {{textAlign: "right"}}>
+                                            <Button variant="outline-primary"> Start Course </Button>
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        
+                    </Row>);
+                })
+            
             
         );
         return courseContainer;
