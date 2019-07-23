@@ -4,13 +4,13 @@ import Button from 'react-bootstrap/Button';
 
 interface IState {
     subjects: string[];
-    collapse: boolean;
+    collapsed: boolean;
 }
 
 interface IProps {
     title: string;
     style?: object;
-    collapseSidebar: () => void
+    collapseSidebar: (title: string) => void
 };
 
 class SubjectSideBar extends React.Component<IProps, IState> {
@@ -20,39 +20,32 @@ class SubjectSideBar extends React.Component<IProps, IState> {
 
         this.state = {
             subjects: ["Mathematics", "Computer Science", "English", "Accounting"],
-            collapse: false
+            collapsed: false
         }
     }
 
-    collapseSideBar = () => {
+    collapseSideBar = (title: string) => {
         this.setState(
             {
-                collapse: !this.state.collapse
+                collapsed: !this.state.collapsed
             }
         );
-        this.props.collapseSidebar();
+        
+        this.props.collapseSidebar(title);
     }
 
     render() {
 
         let subjects: any;
 
-        if(this.state.collapse) {
-            subjects = (
-                <ListGroup style = {{height: "100%", border: "1px solid #f0f0f0"}}>
-                    <ListGroup.Item> 
-                        <Button style = {{float:"right"}} onClick = {this.collapseSideBar}> 
-                            Open
-                        </Button> 
-                    </ListGroup.Item>
-                </ListGroup>
-            );
+        if(this.state.collapsed) {
+            subjects = null
         } else {
             subjects = (
             <ListGroup variant = "flush" style = {{height: "100%", border: "1px solid #f0f0f0", ...this.props.style}}>
                 <ListGroup.Item style = {{fontWeight:500}}>
                     {this.props.title}
-                    <Button style = {{float:"right"}} onClick = {this.collapseSideBar}> Close </Button>
+                    <Button style = {{float:"right"}} onClick = { () => this.collapseSideBar(this.props.title)}> {"<<"} </Button>
                 </ListGroup.Item>
                 <ListGroup.Item action = {true}>
                     Subject 1

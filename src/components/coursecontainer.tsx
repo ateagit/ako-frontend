@@ -5,11 +5,20 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import StarRatingComponent from 'react-star-rating-component';
 
+
+interface IState {
+
+}
+
+interface IProps {
+}
+
 const cardStyling = {
     
     margin: '50px auto 0px auto'
 }
-class CourseContainer extends React.Component {
+
+class CourseContainer extends React.Component<IProps, IState> {
     render() {
 
         const courseContainer:any = (
@@ -18,7 +27,7 @@ class CourseContainer extends React.Component {
             [1, 1, 1, 1, 1, 1].map(i => {
                 return (
                     <Row style = {{margin: 0}}>
-                        <Col md = {{span: 8, offset: 2}} xl = {{span: 6, offset: 3}}>
+                        <Col md = {{span: 9, offset: 1}} >
                             <Card style = {cardStyling} >
                                 <Card.Body>
                                     <Card.Title>
