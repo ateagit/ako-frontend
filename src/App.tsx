@@ -7,7 +7,7 @@ const App: React.FC = () => {
   return (
     <React.Fragment>
       <Header />
-      <MainPage />
+      <MainPage maxCols = {4} />
       
     </React.Fragment>
     

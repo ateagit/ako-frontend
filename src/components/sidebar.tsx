@@ -1,12 +1,9 @@
 import React from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import SubjectSideBar from "./subjectsidebar";
-import Button from "react-bootstrap/Button";
 import {NodeData} from "./mainpage";
 import SidePillar from "./sidepillar";
-import { thisTypeAnnotation } from "@babel/types";
-import { randomBytes } from "crypto";
+import Button from "react-bootstrap/Button";
 
 const colStyling = {
     padding: 0
@@ -20,12 +17,14 @@ const sideBarStyling = {
 }
 
 interface IState {
+    depthToRender: number;
     selectedNavs: number[];
 }
 
 interface IProps {
     depth: number;
     data: NodeData[];
+    onDepthChange: (depth: number) => void;
 }
 
 class SideBar extends React.Component<IProps, IState> {
@@ -33,7 +32,30 @@ class SideBar extends React.Component<IProps, IState> {
         super(props);
         
         this.state = {
-            selectedNavs: new Array(this.props.depth).fill(0)
+            selectedNavs: new Array(this.props.depth).fill(0),
+            depthToRender: 0
+        }
+        
+    }
+
+    selectNav = (navIndexSelected: number, depth: number) => {
+
+        let nextState: number[] = this.state.selectedNavs;
+
+        nextState[depth] = navIndexSelected;
+
+        this.setState({
+            selectedNavs: nextState
+        })
+
+        if(depth == this.state.depthToRender && depth != this.props.depth - 1) {
+            this.setState((prevState) => (
+                {
+                    depthToRender: prevState.depthToRender + 1
+                }
+            ));
+
+            this.props.onDepthChange(depth + 1)
         }
     }
 
@@ -44,8 +66,15 @@ class SideBar extends React.Component<IProps, IState> {
         arr.forEach(d => {
             titles.push(d.title);
         })
-
         return titles;
+    }
+
+    collapsePillars = (depthToCollapseFrom: number) => {
+        this.setState({
+            depthToRender: depthToCollapseFrom-1
+        })
+
+        this.props.onDepthChange(depthToCollapseFrom - 1);
     }
 
     render() {
@@ -55,23 +84,37 @@ class SideBar extends React.Component<IProps, IState> {
         let currentList: NodeData[] = this.props.data; // List of node data objects on current level
         let currentLevel: NodeData | null = this.props.data[this.state.selectedNavs[idepth]]; // Focused node data object on ith level
 
-        while(currentLevel != null) {
-            titles = this.getTitles(currentList);
-
+        if(this.state.depthToRender == -1) {
             sidebar.push(
-                <Col md = {12/this.props.depth - 1} style = {{padding: "0px"}}>
-                    <SidePillar titles = {titles} />
+                <Col>
+                    <div style = {{width: "50px", height: "100%", backgroundColor: "#f9f9f9"}} >
+                        <Button  style = {{width: "100%"}} onClick = {() => this.collapsePillars(this.props.depth)}>  >> </Button>
+                    </div>
                 </Col>
-            );
+            )
             
-            if(currentLevel.nested != null) {
-                currentList = currentLevel.nested;
-                currentLevel = currentList[this.state.selectedNavs[++idepth]]; // increase depth by 1, and get ith element in list
+        } else {
+            while(currentLevel != null && idepth <= this.state.depthToRender) {
+                titles = this.getTitles(currentList);
+
                 
-            } else {
-                currentLevel = null;
-            }
-        };
+                
+                sidebar.push(
+                
+                    <Col md = {12/(this.state.depthToRender + 1)} style = {{padding: "0px"}}>
+                        <SidePillar depth = {idepth} titles = {titles} collapsePillar = {this.collapsePillars} selectNav = {this.selectNav}/>
+                    </Col>
+                );
+                
+                if(currentLevel.nested != null) {
+                    currentList = currentLevel.nested;
+                    currentLevel = currentList[this.state.selectedNavs[++idepth]]; // increase depth by 1, and get ith element in list
+                    
+                } else {
+                    currentLevel = null;
+                }
+            };
+        }
 
         return (<Row style = {{height: "100%"}}> {sidebar} </Row>);
     }
