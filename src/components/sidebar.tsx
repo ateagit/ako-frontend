@@ -3,7 +3,10 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SubjectSideBar from "./subjectsidebar";
 import Button from "react-bootstrap/Button";
-
+import {NodeData} from "./mainpage";
+import SidePillar from "./sidepillar";
+import { thisTypeAnnotation } from "@babel/types";
+import { randomBytes } from "crypto";
 
 const colStyling = {
     padding: 0
@@ -17,94 +20,60 @@ const sideBarStyling = {
 }
 
 interface IState {
-    sidebars: SidebarState[];
-    numCollapsed: number;
+    selectedNavs: number[];
 }
 
 interface IProps {
-    collapseSidebar: (numCollapsed: number) => void;
-}
-
-interface SidebarState {
-    name: string; 
-    collapsed: boolean;
+    depth: number;
+    data: NodeData[];
 }
 
 class SideBar extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
-
+        
         this.state = {
-            sidebars: [
-                {
-                    name: "Subject",
-                    collapsed: false
-                },
-                {
-                    name: "Course",
-                    collapsed: false
-                }
-            ],
-            numCollapsed: 0
+            selectedNavs: new Array(this.props.depth).fill(0)
         }
     }
 
-    collapseSideBar = (title: string) => {
-        let numToCollapse: number;
-        let sidebarsToCollapse: SidebarState[] = this.state.sidebars;
+    getTitles = (arr: NodeData[]) => 
+    {
+        let titles: string[] = [];
 
-        if(title == this.state.sidebars[0].name) {
-            numToCollapse = 2;
-        } else {
-            numToCollapse = 1;
-        }
-
-        sidebarsToCollapse.forEach(t => {
-            if(t.name === title) {
-                t.collapsed = !t.collapsed;
-            }
+        arr.forEach(d => {
+            titles.push(d.title);
         })
 
-        this.setState({
-            numCollapsed: numToCollapse,
-            sidebars: sidebarsToCollapse
-        });
-        
-        this.props.collapseSidebar(numToCollapse);
+        return titles;
     }
 
     render() {
-        let sidebar: any;
-        
-        sidebar = (
-            <Row style = {{height: "100%"}}>
-                {
-                <Col md = {1} style = {sideBarStyling}>
-                    <Button style = {{float:"right"}} onClick = {() => this.collapseSideBar(this.state.sidebars[0].name)}> 
-                            {">>"}
-                    </Button> 
-                </Col>}
+        let sidebar: any[] = [];
+        let idepth: number = 0;
+        let titles: string[];
+        let currentList: NodeData[] = this.props.data; // List of node data objects on current level
+        let currentLevel: NodeData | null = this.props.data[this.state.selectedNavs[idepth]]; // Focused node data object on ith level
 
-                <Col md = {this.state.numCollapsed == 1 ? 12: 6} style= {{...colStyling, ...{zIndex: 2}}}>
-                    <SubjectSideBar 
-                        title={this.state.sidebars[0].name}
-                        collapseSidebar = {() => this.collapseSideBar(this.state.sidebars[0].name)}
-                        style = {{boxShadow: "#efefef 3px 0px 20px 0px"}}/>
+        while(currentLevel != null) {
+            titles = this.getTitles(currentList);
+
+            sidebar.push(
+                <Col md = {12/this.props.depth - 1} style = {{padding: "0px"}}>
+                    <SidePillar titles = {titles} />
                 </Col>
-                {this.state.numCollapsed > 0 ? null :
-                    
-                <Col md = {5} style= {colStyling}>
-                    <SubjectSideBar
-                        title={this.state.sidebars[1].name}
-                        collapseSidebar = {() => this.collapseSideBar(this.state.sidebars[1].name)}/>
-                </Col>
-                }
+            );
+            
+            if(currentLevel.nested != null) {
+                currentList = currentLevel.nested;
+                currentLevel = currentList[this.state.selectedNavs[++idepth]]; // increase depth by 1, and get ith element in list
                 
-            </Row>
-        );
-        
-        
-        return sidebar;
+            } else {
+                currentLevel = null;
+            }
+        };
+
+        return (<Row style = {{height: "100%"}}> {sidebar} </Row>);
     }
 }
 

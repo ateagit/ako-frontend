@@ -5,50 +5,45 @@ import SideBar from "./sidebar";
 import CourseContainer from "./coursecontainer";
 
 interface IState {
-    numCollapsed: number
+    subjectData: NodeData[];
 }
 
 interface IProps {
 }
+
+export interface NodeData {
+    title: string;
+    nested: NodeData[] | null;
+}
+
 class MainPage extends React.Component<IProps, IState> {
     constructor(props: any) {
         super(props);
 
         this.state = {
-            numCollapsed: 0
+            subjectData: [{
+                title: "Mathematics",
+                nested: [
+                {
+                    title: "Algebra",
+                    nested: null
+                }, 
+                {
+                    title: "Calculus",
+                    nested: null
+                }] 
+            }]
         }
-    }
-
-    collapseSideBar = (numberCollapsed: number) => {
-        this.setState(
-            {
-                numCollapsed: numberCollapsed
-            }
-        );
     }
 
     render() {
-        let size: number = 9;
-
-        switch(this.state.numCollapsed) {
-            case 2:
-                size = 12;
-                break;
-            case 1: 
-                size = 10;
-                break;
-
-            case 0:
-                size = 8;
-                break;
-        }
 
         const sidebar:any = (
             <Row>
-                <Col md = {12 - size}>
-                    <SideBar collapseSidebar = {this.collapseSideBar} />
+                <Col md = {4}>
+                    <SideBar depth = {2} data = {this.state.subjectData} />
                 </Col>
-                <Col md = {size}>
+                <Col md = {8}>
                     <CourseContainer />
                 </Col>
             </Row>
