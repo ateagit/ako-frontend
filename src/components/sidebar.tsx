@@ -44,6 +44,8 @@ class SideBar extends React.Component<IProps, IState> {
 
         nextState[depth] = navIndexSelected;
 
+        nextState.fill(0, depth+1);
+
         this.setState({
             selectedNavs: nextState
         })

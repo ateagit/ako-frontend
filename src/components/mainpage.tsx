@@ -33,6 +33,10 @@ class MainPage extends React.Component<IProps, IState> {
                 {
                     title: "Calculus",
                     nested: null
+                }, 
+                {
+                    title: "Statistics",
+                    nested: null
                 }] 
             }, {
                 title: "Computer Science",
