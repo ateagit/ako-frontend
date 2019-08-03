@@ -1,7 +1,7 @@
 import React from "react";
 import Select from "react-select";
-import { Editor, OnChangeParam } from 'slate-react'
-import { Value } from 'slate'
+import { Editor, OnChangeParam, getEventTransfer } from 'slate-react'
+import { Value, CommandFunc, Text } from 'slate'
 import ToolBar from "./toolbar";
 import Button from '@material-ui/core/Button';
 import FormatBold from '@material-ui/icons/FormatBold';
@@ -9,7 +9,10 @@ import FormatItalic from '@material-ui/icons/FormatItalic';
 import FormatUnderlined from '@material-ui/icons/FormatUnderlined';
 import Code from '@material-ui/icons/Code';
 import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate';
-
+import VideoLibrary from '@material-ui/icons/VideoLibrary';
+import isUrl from 'is-url';
+import imageExtensions from 'image-extensions';
+import Video from "./embeddedvideo";
 
 interface IState {
     editorState: Value;
@@ -32,7 +35,7 @@ const initialValue = Value.fromJSON({
                         leaves: [
                             {
                                 object: 'leaf',
-                                text: 'Start creating your course here...'
+                                text: ''
                             }
                         ]
                     }
@@ -42,11 +45,65 @@ const initialValue = Value.fromJSON({
     }
   })
 
+  const schema = {
+    blocks: {
+      image: {
+        isVoid: true
+      },
+      video: {
+        isVoid: true
+      }
+    },
+  }
+
 const editorStyle = {
     border: '1px solid gray',
     minHeight: '6em',
     width: "50%"
-  }
+}
+
+
+let insertImage: CommandFunc;
+
+insertImage  = (editor: any, src: any, target: any) => {
+    if (target) {
+        editor.select(target)
+    }
+
+    
+
+    editor.insertBlock({
+        type: 'image',
+        data: { src },
+    })
+
+    return editor;
+}
+
+let insertVideo  = (editor: any, msrc: any, target: any) => {
+    if (target) {
+        editor.select(target)
+    }
+    const getYouTubeID = require('get-youtube-id');
+    const id = getYouTubeID(msrc);
+    const src:string = "http://www.youtube.com/embed/" + id;
+
+    editor.insertBlock({
+        type: 'video',
+        data: {src},
+    })
+
+    return editor;
+}
+
+
+
+function getExtension(url: string) {
+    const newUrl: string | undefined = new URL(url).pathname.split('.').pop();
+
+    return newUrl === undefined ? "dummy" : newUrl;
+}
+
 class CourseCreator extends React.Component<IProps, IState> {
     private _editorRef: React.RefObject<Editor>;
 
@@ -108,6 +165,29 @@ class CourseCreator extends React.Component<IProps, IState> {
         return next();
     }
 
+    onClickImage = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault();
+
+        const src = window.prompt('Enter the URL of the image:')
+        if (!src) return
+
+        if(this._editorRef.current != null) {
+            this._editorRef.current.command(insertImage, src)
+        }
+    }
+
+    onClickVideo = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault();
+
+        const src = window.prompt('Enter the URL of the video:')
+        if (!src) return
+        console.log(src);
+        if(this._editorRef.current != null) {
+            this._editorRef.current.command(insertVideo, src)
+        }
+    }
+
+    
     render() {
         const options = [
             { value: 'chocolate', label: 'Chocolate' },
@@ -119,7 +199,7 @@ class CourseCreator extends React.Component<IProps, IState> {
         const editor = (
             <React.Fragment>
                 
-                <input style = {{display: "block", border: "none"}} type = "text" name = "title" defaultValue = "Enter title here"/>
+                <input style = {{display: "block", border: "none"}} type = "text" name = "title" placeholder = "Enter title here"/>
 
                 <h3>Add Prerequisite courses here</h3>
 
@@ -130,26 +210,40 @@ class CourseCreator extends React.Component<IProps, IState> {
                     {this.renderMarkButton('underlined', <FormatUnderlined />)}
                     {this.renderMarkButton('code', <Code />)}
                     {this.renderImageButton(<AddPhotoAlternate />)}
+                    {this.renderVideoButton(<VideoLibrary />)}
                 </ToolBar>
                 <Editor 
-                    placeholder="Enter some rich text..."
+                    placeholder="Start writing your course here..."
                     value = {this.state.editorState}
+                    schema = {schema}
                     onChange = {this.updateEditorState}
                     onKeyDown = {this.onKeyDown}
                     renderBlock = {this.renderBlock}
                     renderMark = {this.renderMark}
                     ref = {this._editorRef}
+                    onDrop = {this.onDropOrPaste}
+                    onPaste = {this.onDropOrPaste}
                 />
             </React.Fragment>
         )
         return editor;
     }
 
+    renderVideoButton = (icon: any) => {
+        return (
+            <Button 
+                style = {{minWidth: "0px", borderRadius: "50px"}}
+                onMouseDown = {this.onClickVideo}>
+                {icon}
+            </Button>
+        );
+    }
 
     renderImageButton = (icon: any) => {
         return (
             <Button 
-                style = {{minWidth: "0px", borderRadius: "50px"}}>
+                style = {{minWidth: "0px", borderRadius: "50px"}}
+                onMouseDown = {this.onClickImage}>
                 {icon}
             </Button>
         );
@@ -171,8 +265,10 @@ class CourseCreator extends React.Component<IProps, IState> {
             this._editorRef.current.toggleMark(type);
         }
     }
+
     // Function returns the correct block type.
     renderBlock = (props:any, editor:any, next:any) => {
+
         switch (props.node.type) {
             case 'block-quote':
                 return <blockquote {...props.attributes}>{props.children}</blockquote>;
@@ -182,6 +278,27 @@ class CourseCreator extends React.Component<IProps, IState> {
                 return <li {...props.attributes}>{props.children}</li>;
             case 'numbered-list':
                 return <ol {...props.attributes}>{props.children}</ol>;
+            case 'image': {
+                const src = props.node.data.get('src');
+                const isFocused = props.isFocused;
+                return (
+                    <img
+                      {...props.attributes}
+                      src={src}
+                      style = {{
+                        display: "block",
+                        maxWidth: "100%",
+                        maxHeight: "20em",
+                        boxShadow: isFocused ? '0 0 0 2px blue' : 'none'
+                      }}
+                      
+                    />
+                  )
+            }
+            case 'video': {
+                console.log(props);
+                return <Video {...props} />
+            }
             default:
                 return next();
         }
@@ -202,6 +319,42 @@ class CourseCreator extends React.Component<IProps, IState> {
                 return next();
         }
     }
+
+    onDropOrPaste = (event: any, editor: any, next: any) => {
+        const target = editor.findEventRange(event)
+        if (!target && event.type === 'drop') return next()
+    
+        const transfer = getEventTransfer(event)
+        
+        const { type } = transfer;
+        
+        if (type === 'files') {
+          for (const file of transfer.files) {
+            const reader = new FileReader()
+            const [mime] = file.type.split('/')
+            if (mime !== 'image') continue
+    
+            reader.addEventListener('load', () => {
+              editor.command(insertImage, reader.result, target)
+            })
+    
+            reader.readAsDataURL(file)
+          }
+          return
+        }
+        
+        
+        if (type === 'text') {
+            if (!isUrl(transfer.text)) return next()
+            if (!imageExtensions.includes(getExtension(transfer.text))) return next()
+            editor.command(insertImage, transfer.text, target)
+            return
+        }
+    
+        next()
+      
+    }
+    
 
 }
 
