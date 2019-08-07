@@ -65,7 +65,7 @@ class MainPage extends React.Component<IProps, IState> {
         let nCol = this.state.dataDepth < 2 ? 2 * this.state.dataDepth: this.props.maxCols;
         
 
-        if(this.state.dataDepth == -1) {
+        if(this.state.dataDepth === -1) {
             nCol = 1;
         } else if(this.state.dataDepth > 2) {
             nCol = this.props.maxCols;
@@ -75,10 +75,10 @@ class MainPage extends React.Component<IProps, IState> {
 
         const sidebar:any = (
             <Row>
-                <Col md = {nCol}>
+                <Col md = {2}>
                     <SideBar depth = {2} data = {this.state.subjectData} onDepthChange = {this.changeDepth} />
                 </Col>
-                <Col md = {12 - nCol}>
+                <Col md = {10}>
                     <CourseContainer />
                 </Col>
             </Row>

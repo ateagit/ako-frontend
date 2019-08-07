@@ -17,7 +17,7 @@ import Video from "./embeddedvideo";
 interface IState {
     editorState: Value;
 }
-
+    
 interface IProps {
 
 }
