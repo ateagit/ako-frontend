@@ -11,7 +11,7 @@ class LoginPage extends React.Component<{}, {}> {
 
         const googleButton = (
             <GoogleLogin
-                clientId="568175375094-3ee65feqm7s1o0nr43vv3bkhk8bipa70.apps.googleusercontent.com"
+                clientId="568175375094-akbedu10kqssq578062a3ijsvsvdvttb.apps.googleusercontent.com"
                 buttonText="Login"
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}

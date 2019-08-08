@@ -8,9 +8,9 @@ import LoginPage from './components/loginpage';
 const App: React.FC = () => {
   return (
     <React.Fragment>
-      {/*<Header />*/}
-      <LoginPage />
-      {/*<MainPage maxCols = {4} /> */}
+      <Header />
+      {/*<LoginPage />*/}
+      <MainPage maxCols = {4} />
       {/*<CourseCreator />*/}
     </React.Fragment>
     
