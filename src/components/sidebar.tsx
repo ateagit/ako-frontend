@@ -1,135 +1,118 @@
 import React from "react";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import {NodeData} from "./mainpage";
-import SidePillar from "./sidepillar";
-import Button from "react-bootstrap/Button";
-import './sidebar.css'
-const colStyling = {
-    padding: 0
-}
-
-const sideBarStyling = {
-    height: "100%",
-    width: "50px",
-    borderRight: "1px solid #efefef",
-    backgroundColor: "#f9f9f9"
-}
-
-interface IState {
-    depthToRender: number;
-    selectedNavs: number[];
-}
+import {NodeData} from './mainpage';
+import Button from "@material-ui/core/Button";
+import { CSSProperties } from "@material-ui/styles";
+import ArrowRight from "@material-ui/icons/ArrowRight";
+import NestedButton from "./nestedbutton";
 
 interface IProps {
-    depth: number;
-    data: NodeData[];
-    onDepthChange: (depth: number) => void;
+    listItems: NodeData[];
 }
 
-class SideBar extends React.Component<IProps, IState> {
-    constructor(props: any) {
+
+const sidebarContainerStyle = {
+    width: "250px",
+    height: "100vh",
+    backgroundColor: "#f7f7f7",
+    borderRight: "1px solid #ececec"
+}
+
+const listButtonContainerStyle = {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    paddingTop: "20%",
+    flexWrap: "wrap"
+} as CSSProperties;
+
+const buttonStyle = {
+    width: "100%", 
+    justifyContent: "flex-start", 
+    color: "#5a5a5a",
+    textTransform: "none",
+    fontSize: "16px"
+} as CSSProperties;
+
+const activeButtonStyle = {
+    backgroundColor: "#ec7ca2",
+    color: "#fffdfd",
+    boxShadow: "inset 0 0 1px 0px #717171"
+}
+
+class SideBar extends React.Component<IProps, {}> {
+
+    constructor(props: IProps) {
         super(props);
-        
-        this.state = {
-            selectedNavs: new Array(this.props.depth).fill(0),
-            depthToRender: 0
-        }
-        
-    }
-
-    selectNav = (navIndexSelected: number, depth: number) => {
-
-        let nextState: number[] = this.state.selectedNavs;
-
-        nextState[depth] = navIndexSelected;
-
-        nextState.fill(0, depth+1);
-
-        this.setState({
-            selectedNavs: nextState
-        })
-
-        if(depth === this.state.depthToRender && depth !== this.props.depth - 1) {
-            this.setState((prevState) => (
-                {
-                    depthToRender: prevState.depthToRender + 1
-                }
-            ));
-
-            this.props.onDepthChange(depth + 1)
-        }
-    }
-
-    getTitles = (arr: NodeData[]) => 
-    {
-        let titles: string[] = [];
-
-        arr.forEach(d => {
-            titles.push(d.title);
-        })
-        return titles;
-    }
-
-    collapsePillars = (depthToCollapseFrom: number) => {
-        this.setState({
-            depthToRender: depthToCollapseFrom-1
-        })
-
-        this.props.onDepthChange(depthToCollapseFrom - 1);
     }
 
     render() {
-        let sidebar: any[] = [];
-        let idepth: number = 0;
-        let titles: string[];
-        let currentList: NodeData[] = this.props.data; // List of node data objects on current level
-        let currentLevel: NodeData | null = this.props.data[this.state.selectedNavs[idepth]]; // Focused node data object on ith level
 
-        if(this.state.depthToRender === -1) {
-            sidebar.push(
-                <Col>
-                    <div style = {{width: "50px", height: "100%", backgroundColor: "#f9f9f9"}} >
-                        <Button  style = {{width: "100%"}} onClick = {() => this.collapsePillars(this.props.depth)}>  >> </Button>
-                    </div>
-                </Col>
-            )
-            
-        } else {
-            
+        const sidebar: JSX.Element = (
+            <div className = "sidebar-container" style = {sidebarContainerStyle}>
+                <div style = {listButtonContainerStyle}>
+                    <Button style = {{width: "80%", justifyContent: "flex-start", color: "#5a5a5a", textTransform: "none", fontSize: "16px", ...activeButtonStyle}}>
+                        Mathematics
+                        <ArrowRight style = {{marginLeft: "auto"}} />
+                    </Button>
 
-            while(currentLevel != null && idepth <= this.state.depthToRender) {
-                titles = this.getTitles(currentList);
-
-                const leftStyling = {
-                    position: "absolute", 
-                    left: "100%", 
-                    height: "100%", 
-                    backgroundColor: "white",
-                    zIndex: 999,
-                    boxShadow: "#2f2f2f2b 14px 0px 11px 0px"
-                }
+                    <Button style = {{width: "80%", justifyContent: "flex-start", color: "#5a5a5a", textTransform: "none", fontSize: "16px"}}>
+                        Mathematics
+                    </Button>
+                    <ButtonList nodes = {this.props.listItems} depth = {0}/>
+                </div>
                 
-                let stylingToAdd = idepth === 0 ? {} : leftStyling;
-                sidebar.push(
-                
-                    <Col xs = {12} md = {12}  className = {"sidebarCol"} style = {{padding: "0px", ...stylingToAdd}}>
-                        <SidePillar depth = {idepth} titles = {titles} collapsePillar = {this.collapsePillars} selectNav = {this.selectNav}/>
-                    </Col>
-                );
-                
-                if(currentLevel.nested !== null) {
-                    currentList = currentLevel.nested;
-                    currentLevel = currentList[this.state.selectedNavs[++idepth]]; // increase depth by 1, and get ith element in list
-                    
-                } else {
-                    currentLevel = null;
-                }
-            };
-        }
+            </div>
+        )
 
-        return (<Row style = {{height: "100%", position: "relative"}}> {sidebar} </Row>);
+        return sidebar;
     }
+}
+
+function ButtonList(props: any) : JSX.Element {
+
+    // depth: number, topLevelNodes: NodeData[]
+
+    const topLevelNodes:NodeData[] = props.nodes;
+    const depth:number = props.depth;
+    /*
+    title: "Mathematics",
+    children: [
+    {
+        title: "Algebra",
+        children: null
+    }, 
+    {
+        title: "Calculus",
+        children: null
+    }, 
+    {
+        title: "Statistics",
+        children: null
+    }] 
+    */ 
+    const buttonList:JSX.Element = (
+        <div style = {{marginRight: depth*-5, width: depth == 0 ? "80%": "100%"}}>
+            {
+                topLevelNodes.map(node => {
+                    if(node.children != null) {
+                        return (
+                            <NestedButton title = {node.title} style = {buttonStyle}>
+                                <ButtonList depth = {1} nodes = {node.children} />
+                            </NestedButton>
+                            );
+                    } else {
+                        return ( 
+                            <Button style = {buttonStyle}>
+                                {node.title}
+                            </Button>
+                        );
+                    }
+                })
+            }
+        </div>
+    )
+    
+    return buttonList;
 }
 
 export default SideBar;
