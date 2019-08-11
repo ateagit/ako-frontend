@@ -11,7 +11,7 @@ class Header extends React.Component {
         const header:any  = (
             <Navbar  expand="lg" bg="dark" variant="dark" style = {{zIndex: 5}}>
                 {/* Logo for the website, outside NavBar.Collapse so wont be collapsed */}
-                <Navbar.Brand href="#home">
+                <Navbar.Brand href="/home">
                     <img
                         src = {image}
                         width="30"
@@ -28,9 +28,9 @@ class Header extends React.Component {
                 <Navbar.Collapse>
                     {/* ml-auto is marginLeft: auto */}
                     <Nav className="ml-auto"> 
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#About">About</Nav.Link>
-                        <Nav.Link href="#login">Login</Nav.Link>
+                        <Nav.Link href="/home">Home</Nav.Link>
+                        <Nav.Link href="/about">About</Nav.Link>
+                        <Nav.Link href="/login">Login</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

@@ -14,8 +14,9 @@ interface IProps {
 }
 
 const cardStyling = {
-    
-    margin: '50px auto 0px auto'
+    margin: '50px auto 0px auto',
+    borderRadius: "10px",
+    border: "1px solid #ececec"
 }
 
 class CourseContainer extends React.Component<IProps, IState> {
@@ -27,7 +28,7 @@ class CourseContainer extends React.Component<IProps, IState> {
             [1, 1, 1, 1, 1, 1].map(i => {
                 return (
                     <Row style = {{margin: 0}}>
-                        <Col md = {{span: 9, offset: 1}} >
+                        <Col md = {{span: 10, offset: 1}} >
                             <Card style = {cardStyling} >
                                 <Card.Body>
                                     <Card.Title>

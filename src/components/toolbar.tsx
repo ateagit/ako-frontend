@@ -3,7 +3,8 @@ import React from "react";
 const toolbarStyling = {
     minHeight: "50px",
     width: "100%",
-    backgroundColor: "#f7f7f7"
+    backgroundColor: "#f7f7f7",
+    marginTop: "40px"
 }
 
 interface IProps {

@@ -13,6 +13,8 @@ import VideoLibrary from '@material-ui/icons/VideoLibrary';
 import isUrl from 'is-url';
 import imageExtensions from 'image-extensions';
 import Video from "./embeddedvideo";
+import Card from "react-bootstrap/Card";
+import { minHeight } from "@material-ui/system";
 
 interface IState {
     editorState: Value;
@@ -20,6 +22,16 @@ interface IState {
     
 interface IProps {
 
+}
+
+const cardStyling = {
+    width: "80%",
+    margin: "0 auto",
+    marginTop: "50px",
+    borderRadius: "30px",
+    padding: "20px",
+    boxShadow: "0 0 11px 0px #f1f1f1",
+    border: "1px solid #ececec"
 }
 
 // this is the initial value of the editor
@@ -198,32 +210,34 @@ class CourseCreator extends React.Component<IProps, IState> {
           
         const editor = (
             <React.Fragment>
-                
-                <input style = {{display: "block", border: "none"}} type = "text" name = "title" placeholder = "Enter title here"/>
+                <Card style = {cardStyling}>
+                    <input style = {{display: "block", border: "none", fontSize: "40px", marginBottom: "20px"}} type = "text" name = "title" placeholder = "Enter title here"/>
 
-                <h3>Add Prerequisite courses here</h3>
+                    <h5 style = {{color: "#403e3e"}} >Add Prerequisite courses here</h5>
 
-                <Select options={options} isMulti = {true} />
-                <ToolBar>
-                    {this.renderMarkButton('bold',  <FormatBold />)}
-                    {this.renderMarkButton('italic', <FormatItalic />)}
-                    {this.renderMarkButton('underlined', <FormatUnderlined />)}
-                    {this.renderMarkButton('code', <Code />)}
-                    {this.renderImageButton(<AddPhotoAlternate />)}
-                    {this.renderVideoButton(<VideoLibrary />)}
-                </ToolBar>
-                <Editor 
-                    placeholder="Start writing your course here..."
-                    value = {this.state.editorState}
-                    schema = {schema}
-                    onChange = {this.updateEditorState}
-                    onKeyDown = {this.onKeyDown}
-                    renderBlock = {this.renderBlock}
-                    renderMark = {this.renderMark}
-                    ref = {this._editorRef}
-                    onDrop = {this.onDropOrPaste}
-                    onPaste = {this.onDropOrPaste}
-                />
+                    <Select options={options} isMulti = {true} />
+                    <ToolBar>
+                        {this.renderMarkButton('bold',  <FormatBold />)}
+                        {this.renderMarkButton('italic', <FormatItalic />)}
+                        {this.renderMarkButton('underlined', <FormatUnderlined />)}
+                        {this.renderMarkButton('code', <Code />)}
+                        {this.renderImageButton(<AddPhotoAlternate />)}
+                        {this.renderVideoButton(<VideoLibrary />)}
+                    </ToolBar>
+                    <Editor 
+                        placeholder="Start writing your course here..."
+                        value = {this.state.editorState}
+                        schema = {schema}
+                        onChange = {this.updateEditorState}
+                        onKeyDown = {this.onKeyDown}
+                        renderBlock = {this.renderBlock}
+                        renderMark = {this.renderMark}
+                        ref = {this._editorRef}
+                        onDrop = {this.onDropOrPaste}
+                        onPaste = {this.onDropOrPaste}
+                        style = {{minHeight: "400px"}}
+                    />
+                </Card>
             </React.Fragment>
         )
         return editor;

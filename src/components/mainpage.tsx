@@ -63,7 +63,19 @@ class MainPage extends React.Component<IProps, IState> {
             
         )
 
-        return sidebar;
+        const mainpage: any = (
+            <React.Fragment>
+                <Row>
+
+                    <SideBar listItems = {this.state.subjectData} />
+                    <Col>
+                        <CourseContainer />
+                    </Col>
+                    
+                </Row>
+            </React.Fragment>
+        )
+        return mainpage;
     }
 }
 

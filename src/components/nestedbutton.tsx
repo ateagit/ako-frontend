@@ -28,7 +28,7 @@ const buttonStyle = {
 const activeButtonStyle = {
     backgroundColor: "#ec7ca2",
     color: "#fffdfd",
-    boxShadow: "inset 0 0 1px 0px #717171"
+    boxShadow: "#ca7393 0px 0px 0px 1px inset"
 }
 
 class NestedButton extends React.Component<IProps, IState> {

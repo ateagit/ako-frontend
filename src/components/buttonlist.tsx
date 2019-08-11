@@ -68,7 +68,7 @@ class ButtonList extends React.Component<IProps, {}> {
                             const link:string = `/courses${parents}/${node.title}`.replace(/ /g,"-").toLowerCase();
     
                             return ( 
-                                <NavLink key = {node.title + "link"} to = {link}>
+                                <NavLink key = {node.title + "link"} to = {link} style = {{textDecoration: "none"}}>
                                     <Route render={(match: any) => {
                                         return (
                                         <Button style = {Object.assign({}, buttonStyle, (match.location.pathname === link ? activeButtonStyle : {}))}>

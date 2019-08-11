@@ -10,8 +10,8 @@ const App: React.FC = () => {
     <React.Fragment>
       <Header />
       {/*<LoginPage />*/}
-      <MainPage maxCols = {4} />
-      {/*<CourseCreator />*/}
+      {/* <MainPage maxCols = {4} /> */}
+      <CourseCreator />
     </React.Fragment>
     
   );
