@@ -3,6 +3,8 @@ import Button from "@material-ui/core/Button";
 import Collapse from "@material-ui/core/Collapse";
 import ArrowRight from "@material-ui/icons/ArrowRight";
 import ArrowDropDown from "@material-ui/icons/ArrowDropDown";
+import { NavLink } from "react-router-dom";
+import { Route } from "react-router";
 
 
 interface IState {
@@ -11,7 +13,22 @@ interface IState {
 
 interface IProps {
     title: string;
-    style: CSSProperties;
+    parents: string;
+
+}
+
+const buttonStyle = {
+    width: "100%", 
+    justifyContent: "flex-start", 
+    color: "#5a5a5a",
+    textTransform: "none",
+    fontSize: "16px"
+} as CSSProperties;
+
+const activeButtonStyle = {
+    backgroundColor: "#ec7ca2",
+    color: "#fffdfd",
+    boxShadow: "inset 0 0 1px 0px #717171"
 }
 
 class NestedButton extends React.Component<IProps, IState> {
@@ -30,14 +47,21 @@ class NestedButton extends React.Component<IProps, IState> {
     }
 
     render() {
+    const link:string = `/courses${this.props.parents}/${this.props.title}`.replace(/ /g,"-").toLowerCase();  
         const nestedButton = (
             <React.Fragment>
-                <Button style = {this.props.style} onClick = {this.toggleOpen}>
-                    {this.props.title}
-                    {this.state.open ? <ArrowDropDown style = {{marginLeft: "auto"}} /> : <ArrowRight style = {{marginLeft: "auto"}} /> }
-                </Button>
+                <NavLink key = {this.props.title + "link"} to = {link} style = {{textDecoration: "none"}}>
+                    <Route render={(match: any) => {
+                        return (
+                        <Button style = {Object.assign({}, buttonStyle, (match.location.pathname === link ? activeButtonStyle : {}))} onClick = {this.toggleOpen}>
+                            {this.props.title}
+                            {this.state.open ? <ArrowDropDown style = {{marginLeft: "auto"}} /> : <ArrowRight style = {{marginLeft: "auto"}} /> }
+                        </Button>
+                        );
+                    }} />
+                </NavLink>
 
-                <Collapse in ={this.state.open} style = {{borderLeft: "1px solid #e6e1e1", paddingLeft: "5px", marginLeft: "10px"}}>
+                <Collapse in ={this.state.open} style = {{borderLeft: "1px solid  #e6e1e1", paddingLeft: "5px", marginLeft: "10px"}}>
                     
                         {this.props.children}
                         
