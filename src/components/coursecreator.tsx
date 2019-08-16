@@ -14,25 +14,33 @@ import isUrl from 'is-url';
 import imageExtensions from 'image-extensions';
 import Video from "./embeddedvideo";
 import Card from "react-bootstrap/Card";
-import { minHeight } from "@material-ui/system";
+import CloudUploadIcon   from "@material-ui/icons/CloudUpload";
+import { any } from "prop-types";
 
 interface IState {
     editorState: Value;
+    
+    subjectOptions: any[],
+    courseOptions: any[],
+    
+    selectedSubject: any,
+    selectedCourses: any[]
 }
     
 interface IProps {
-
+    subjectId: number;
 }
 
 const cardStyling = {
     width: "80%",
     margin: "0 auto",
     marginTop: "50px",
-    borderRadius: "30px",
+    borderRadius: "15px",
     padding: "20px",
     boxShadow: "0 0 11px 0px #f1f1f1",
     border: "1px solid #ececec"
 }
+
 
 // this is the initial value of the editor
 const initialValue = Value.fromJSON({
@@ -116,6 +124,7 @@ function getExtension(url: string) {
     return newUrl === undefined ? "dummy" : newUrl;
 }
 
+
 class CourseCreator extends React.Component<IProps, IState> {
     private _editorRef: React.RefObject<Editor>;
 
@@ -123,12 +132,113 @@ class CourseCreator extends React.Component<IProps, IState> {
         super(props);
 
         this.state ={
-            editorState: initialValue
+            editorState: initialValue,
+
+            subjectOptions: [],
+            courseOptions: [],
+
+            selectedSubject: null,
+            selectedCourses: []
         };
         
         this._editorRef = React.createRef();
     }
 
+    private postCourse = () => {
+        const url = "https://localhost:44383/api/Courses";
+
+        const titleElement = document.getElementById("title") as HTMLInputElement;
+
+
+        if(titleElement == null || titleElement.value == "") {
+            alert("Please enter a title");
+            return;
+        }
+
+        const _title = titleElement.value;
+        const _subjectId = this.state.selectedSubject.value;
+        const _difficulty = 5;
+        const _prerequisiteCourseId = this.state.selectedCourses.map(e => e.value);
+        const _content = this.state.editorState.toJSON();
+
+        const _body:any = {
+            title:  _title,
+            subjectId:_subjectId,
+            difficulty: _difficulty,
+            prerequisiteCourseId: _prerequisiteCourseId,
+            content: _content,
+            creatorId: 1
+        };
+
+        const jsonBody = JSON.stringify(_body);
+
+        fetch(url,{
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                "content-type": "application/json"
+            },
+            body: jsonBody
+        }).then((response: Response) => {
+            alert(response.statusText)
+        });  
+    }
+
+    private getSubjects = () => {
+        const url = "https://localhost:44383/api/Subjects";
+
+        fetch(url,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            }
+        }).then((response: any) => {
+           return response.json();
+        }).then((response: any) => {
+
+            let subjects: any[] = [];
+
+            response.forEach((element:any) => {
+                  subjects.push({label: element.name, value: element.id})
+                  element.children.forEach((nestedElement: any) => {
+                      subjects.push({label: element.name + " / " + nestedElement.name, value: nestedElement.id})
+                  });
+            });
+
+            this.setState({
+                subjectOptions: subjects
+            })
+        });
+    }
+
+    private getCourses = () => {
+        const url = "https://localhost:44383/api/Courses";
+
+        fetch(url,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            }
+        }).then((response: any) => {
+           return response.json();
+        }).then((response: any) => {
+
+            let courses: any[] = [];
+
+            response.forEach((element:any) => {
+                courses.push({value: element.courseId, label: element.title})
+            });
+
+            this.setState({
+                courseOptions: courses
+            })
+        });
+    }
+
+    public componentDidMount() {
+        this.getSubjects();
+        this.getCourses();
+    }
 
     private updateEditorState = (newState: OnChangeParam) => {
         this.setState(
@@ -183,7 +293,7 @@ class CourseCreator extends React.Component<IProps, IState> {
         const src = window.prompt('Enter the URL of the image:')
         if (!src) return
 
-        if(this._editorRef.current != null) {
+        if(this._editorRef.current !== null) {
             this._editorRef.current.command(insertImage, src)
         }
     }
@@ -199,23 +309,59 @@ class CourseCreator extends React.Component<IProps, IState> {
         }
     }
 
-    
+
+    private onSubjectChange = (selectedOption: any) => {
+
+        this.setState({
+            selectedSubject: selectedOption
+        });
+    }
+
+    private onCourseChange = (selectedOption: any, action: any) => {
+        let updatedCourseList: any[] = this.state.selectedCourses;
+
+        switch(action.action) {
+            case "select-option" : {
+                updatedCourseList.push(selectedOption.pop());
+                break;
+            }
+            case "remove-value" : {
+                updatedCourseList = updatedCourseList.filter((e: any) =>  e.value !== action.removedValue.value);
+                break;
+            }
+            case "clear" : {
+                updatedCourseList = [];
+                break;
+            }
+        }
+
+        this.setState({
+            selectedCourses: updatedCourseList
+        });
+    }
+
     render() {
-        const options = [
-            { value: 'chocolate', label: 'Chocolate' },
-            { value: 'strawberry', label: 'Strawberry' },
-            { value: 'vanilla', label: 'Vanilla' }
-          ]
 
           
         const editor = (
             <React.Fragment>
                 <Card style = {cardStyling}>
-                    <input style = {{display: "block", border: "none", fontSize: "40px", marginBottom: "20px"}} type = "text" name = "title" placeholder = "Enter title here"/>
+                    <input id = "title" style = {{display: "block", border: "none", fontSize: "40px", marginBottom: "20px"}} type = "text" name = "title" placeholder = "Enter title here..."/>
 
-                    <h5 style = {{color: "#403e3e"}} >Add Prerequisite courses here</h5>
-
-                    <Select options={options} isMulti = {true} />
+                    <h4 style = {{color: "#403e3e"}} >Add Course Subject here</h4>
+                    <Select 
+                        value = {this.state.selectedSubject} 
+                        options={this.state.subjectOptions} 
+                        onChange = {this.onSubjectChange}
+                    />
+                    <h6 style = {{color: "#403e3e", marginTop: "20px"}} >Add Prerequisite courses here</h6>
+                    
+                    <Select 
+                        value = {this.state.selectedCourses} 
+                        options={this.state.courseOptions}
+                        isMulti = {true} 
+                        onChange = {this.onCourseChange}
+                    />
                     <ToolBar>
                         {this.renderMarkButton('bold',  <FormatBold />)}
                         {this.renderMarkButton('italic', <FormatItalic />)}
@@ -237,7 +383,9 @@ class CourseCreator extends React.Component<IProps, IState> {
                         onPaste = {this.onDropOrPaste}
                         style = {{minHeight: "400px"}}
                     />
+                    <Button onClick = {this.postCourse}  variant="contained" color="secondary"> <CloudUploadIcon style = {{marginRight: "10px"}} /> Submit new course</Button> 
                 </Card>
+                
             </React.Fragment>
         )
         return editor;
