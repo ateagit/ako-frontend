@@ -3,7 +3,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SideBar from "./sidebar";
 import CourseContainer from "./coursecontainer";
-import { Route } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
 
 interface IState {
     subjectData: NodeData[];
@@ -12,7 +12,8 @@ interface IState {
 
 interface IProps {
     maxCols: number;
-    match: any
+    match: any,
+    location: any
 }
 
 export interface NodeData {
@@ -45,9 +46,6 @@ class MainPage extends React.Component<IProps, IState> {
         }).then((response: NodeData[]) => {
 
             let subjects: any[] = [];
-
-            console.log(response);
-
             this.setState({
                 subjectData: response
             })
@@ -60,25 +58,35 @@ class MainPage extends React.Component<IProps, IState> {
 
     render() {
         console.log(this.props.match);
+        console.log("LOCATION", this.props.location);
         const sidebar:any = (
             <SideBar listItems = {this.state.subjectData} />
             
         )
-
+        
         const mainpage: any = (
             <React.Fragment>
                 <Row>
-
+                    
                     <SideBar listItems = {this.state.subjectData} />
+                    {/* <Link to = {`${this.props.match.path}/computer-science`} >
+                        yoyo
+                    </Link> */}
                     <Col>
+                    
                         <Route 
-                            path ={`${this.props.match.url}/:mainSubject?/:subSubject?`}
+                            path ={`${this.props.match.path}/:mainSubject?/:subSubject?`}
                             render ={(routeProps: any) => (
-                            <CourseContainer
-                                mainSubject = {routeProps.match.params.mainSubject}
-                                subSubject = {routeProps.match.params.subSubject}
-                                /> )}
-                                  />
+                                
+                                <React.Fragment>
+                                    <CourseContainer
+                                        mainSubject = {routeProps.match.params.mainSubject}
+                                        subSubject = {routeProps.match.params.subSubject}
+                                        match = {routeProps.match}
+                                    /> 
+                                </React.Fragment>
+                            )}
+                        />
                         {/* <CourseContainer /> */}
                     </Col>
                     

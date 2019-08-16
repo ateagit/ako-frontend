@@ -1,5 +1,4 @@
 import { NodeData } from "./mainpage";
-import { render } from "react-dom";
 import React, { CSSProperties } from "react";
 import NestedButton from "./nestedbutton";
 import { NavLink, Route } from "react-router-dom";

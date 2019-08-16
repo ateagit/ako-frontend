@@ -52,12 +52,14 @@ class NestedButton extends React.Component<IProps, IState> {
             <React.Fragment>
                 <NavLink key = {this.props.title + "link"} to = {link} style = {{textDecoration: "none"}}>
                     <Route render={(match: any) => {
-                        return (
-                        <Button style = {Object.assign({}, buttonStyle, (match.location.pathname === link ? activeButtonStyle : {}))} onClick = {this.toggleOpen}>
+                         return (
+                        <Button 
+                            style = {Object.assign({}, buttonStyle, (match.location.pathname === link ? activeButtonStyle : {}))}
+                            onClick = {this.toggleOpen}>
                             {this.props.title}
                             {this.state.open ? <ArrowDropDown style = {{marginLeft: "auto"}} /> : <ArrowRight style = {{marginLeft: "auto"}} /> }
                         </Button>
-                        );
+                        ); 
                     }} />
                 </NavLink>
 

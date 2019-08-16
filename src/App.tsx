@@ -5,15 +5,17 @@ import MainPage from './components/mainpage';
 import CourseCreator from './components/coursecreator';
 import LoginPage from './components/loginpage';
 import { Route } from 'react-router';
+import CourseViewer from './components/courseviewer';
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
       <Header />
       {/* <LoginPage /> */}
-      <Route  path = "/courses" component = {MainPage}/>
+      <Route path = "/courses" component = {MainPage}/>
+      <Route path = "/view/:id" component = {CourseViewer} />
       {/* <MainPage maxCols = {4} /> */}
-      {/* <CourseCreator subjectId = {1}/> */}
+      <Route path = "/create" component = {CourseCreator} />
     </React.Fragment>
     
   );

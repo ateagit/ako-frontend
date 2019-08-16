@@ -5,6 +5,8 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import StarRatingComponent from 'react-star-rating-component';
 import { NodeData } from './mainpage';
+import { array } from 'prop-types';
+import { Link } from 'react-router-dom';
 
 
 interface IState {
@@ -14,7 +16,8 @@ interface IState {
 
 interface IProps {
     mainSubject: string,
-    subSubject: string
+    subSubject: string,
+    match: any
 }
 
 const cardStyling = {
@@ -57,74 +60,96 @@ class CourseContainer extends React.Component<IProps, IState> {
 
     private getCourses = (subjectData: NodeData[]) => {
         let {mainSubject, subSubject} = this.props;
-
+        
         let subjectId: number | undefined = undefined;
         if(mainSubject == undefined) {
             // If there is no main subject in route
             alert("No main subject") 
-        } 
-
-        // Replace - with space
-        mainSubject = this.formattedString(mainSubject);
-
-        // Check if a subject given exists in db
-        const mainSub = subjectData.find(s => s.name.toLowerCase() == mainSubject);
-
-        // If it isnt found, return
-        if(mainSub == undefined) {
-            alert("Bad URL")
-            return;
-        } 
-
-
-        // If secondary route is undefined or main sub has no children, then search for main sub.
-        if(subSubject == undefined || mainSub.children == null) {
-            subjectId = mainSub.id
         } else {
-            subSubject = this.formattedString(mainSubject);
-            const subSub = mainSub.children.find(s => s.name.toLowerCase() == subSubject);
+             // Replace - with space
+            mainSubject = this.formattedString(mainSubject);
 
-            if(subSub == undefined) {
+            // Check if a subject given exists in db
+            const mainSub = subjectData.find(s => s.name.toLowerCase() == mainSubject);
+
+            // If it isnt found, return
+            if(mainSub == undefined) {
                 alert("Bad URL")
-                return
+                return;
+            } 
+
+            
+            // If secondary route is undefined or main sub has no children, then search for main sub.
+            if(subSubject == undefined || mainSub.children == null) {
+                subjectId = mainSub.id
+            } else {
+                subSubject = this.formattedString(subSubject);
+
+                const subSub = mainSub.children.find(s => s.name.toLowerCase() == subSubject);
+
+                if(subSub == undefined) {
+                    alert("Bad URL")
+                    return
+                }
+
+                subjectId = subSub.id;
             }
 
-            subjectId = subSub.id;
         }
+
+       
         let url: string = "https://localhost:44383/api"
         if(subjectId == undefined) {
             url += "/Courses"
+            fetch(url,{
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                }
+            }).then((response: any) => {
+               return response.json();
+            }).then((response: any) => {
+                this.setState({
+                    courses: response
+                })
+            });
         } else {
             url += "/Subjects/" + subjectId + "/Courses"
+            fetch(url,{
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                }
+            }).then((response: any) => {
+               return response.json();
+            }).then((response: any) => {
+                this.setState({
+                    courses: response.pop().course
+                })
+            });
         }
 
-        fetch(url,{
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-            }
-        }).then((response: any) => {
-           return response.json();
-        }).then((response: any) => {
-    
-            this.setState({
-                courses: response.pop().course
-            })
-        });
+        
     }
 
+    componentDidUpdate(prevProps: IProps) {
+        if(this.props.mainSubject != prevProps.mainSubject || this.props.subSubject != prevProps.subSubject) {
+            this.getSubjects();
+        }
+    }
     componentDidMount() {
         this.getSubjects();
     }
     
 
     render() {
+        console.log(this.props.match);
         const courseContainer:any = (
 
             // Split into different Card components: e.g. Video Card, Image Card, Text Card
-            this.state.courses.map(course => {
+            this.state.courses.map((course: any, i: number) => {
                 return (
-                    <Row style = {{margin: 0}}>
+                    <Row key = {course + i} style = {{margin: 0}}>
                         <Col md = {{span: 10, offset: 1}} >
                             <Card style = {cardStyling} >
                                 <Card.Body>
@@ -139,7 +164,9 @@ class CourseContainer extends React.Component<IProps, IState> {
                                             <StarRatingComponent name="rate1" starCount={5} value={course.rating} />
                                         </Col>
                                         <Col style = {{textAlign: "right"}}>
-                                            <Button variant="outline-primary"> Start Course </Button>
+                                            <Link to = {"/view/"+ course.courseId}>
+                                                <Button variant="outline-primary"> Start Course </Button>
+                                            </Link>
                                         </Col>
                                     </Row>
                                 </Card.Body>

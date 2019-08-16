@@ -15,7 +15,6 @@ import imageExtensions from 'image-extensions';
 import Video from "./embeddedvideo";
 import Card from "react-bootstrap/Card";
 import CloudUploadIcon   from "@material-ui/icons/CloudUpload";
-import { any } from "prop-types";
 
 interface IState {
     editorState: Value;
@@ -28,7 +27,6 @@ interface IState {
 }
     
 interface IProps {
-    subjectId: number;
 }
 
 const cardStyling = {
@@ -489,7 +487,7 @@ class CourseCreator extends React.Component<IProps, IState> {
         const transfer = getEventTransfer(event)
         
         const { type } = transfer;
-        
+        /*
         if (type === 'files') {
           for (const file of transfer.files) {
             const reader = new FileReader()
@@ -504,7 +502,7 @@ class CourseCreator extends React.Component<IProps, IState> {
           }
           return
         }
-        
+        */
         
         if (type === 'text') {
             if (!isUrl(transfer.text)) return next()
