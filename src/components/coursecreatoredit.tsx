@@ -23,10 +23,12 @@ interface IState {
     courseOptions: any[],
     
     selectedSubject: any,
-    selectedCourses: any[]
+    selectedCourses: any[],
+    selectedCourse: any
 }
     
 interface IProps {
+    match: any
 }
 
 const cardStyling = {
@@ -123,7 +125,7 @@ function getExtension(url: string) {
 }
 
 
-class CourseCreator extends React.Component<IProps, IState> {
+class CourseEditor extends React.Component<IProps, IState> {
     private _editorRef: React.RefObject<Editor>;
 
     constructor(props: any) {
@@ -136,10 +138,30 @@ class CourseCreator extends React.Component<IProps, IState> {
             courseOptions: [],
 
             selectedSubject: null,
-            selectedCourses: []
+            selectedCourses: [],
+            selectedCourse: []
         };
         
         this._editorRef = React.createRef();
+    }
+
+    private getCourse = () => {
+        const url = "https://localhost:44383/api/Courses/" + this.props.match.params.id;
+
+        fetch(url,{
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            }
+        }).then((response: any) => {
+           return response.json();
+        }).then((response: any) => {
+            console.log(response);
+            this.setState({
+                selectedCourse: response,
+                editorState: Value.fromJSON(JSON.parse(response.content))
+            })
+        });
     }
 
     private postCourse = () => {
@@ -518,4 +540,4 @@ class CourseCreator extends React.Component<IProps, IState> {
 
 }
 
-export default CourseCreator;
+export default CourseEditor;
