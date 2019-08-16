@@ -7,6 +7,7 @@ import { Route, Redirect } from 'react-router';
 import CourseViewer from './components/courseviewer';
 import CourseCreatorEdit from './components/coursecreatoredit';
 import CourseCreator from './components/coursecreator';
+import image from './components/logo.png';
 
 interface IState {
   authenticate: boolean;
@@ -83,7 +84,17 @@ render() {
 }
 
 function mainPage(props: any) {
-  return <div>Please login</div> 
+  return <div>
+    <div style = {{textAlign: "center"}}>
+    <img
+          src = {image}
+          style = {{width: "auto", height: "auto"}}
+          className="d-inline-block align-top"
+          alt="React Bootstrap logo"
+      />  
+      <h1>Please login</h1>
+    </div>
+  </div> 
 }
 
 export default App;
