@@ -34,7 +34,7 @@ class MainPage extends React.Component<IProps, IState> {
     }
     
     private getSubjects = () => {
-        const url = "https://localhost:44383/api/Subjects";
+        const url = "https://ako-api.azurewebsites.net/api/Subjects";
 
         fetch(url,{
             method: 'GET',

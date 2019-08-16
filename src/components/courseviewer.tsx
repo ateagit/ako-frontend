@@ -81,7 +81,7 @@ class CourseViewer extends React.Component<IProps, IState> {
     }
 
     private getCourse = () => {
-        const url = "https://localhost:44383/api/Courses/" + this.props.match.params.id;
+        const url = "https://ako-api.azurewebsites.net/api/Courses/" + this.props.match.params.id;
 
         fetch(url,{
             method: 'GET',

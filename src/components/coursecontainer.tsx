@@ -38,7 +38,7 @@ class CourseContainer extends React.Component<IProps, IState> {
     }
 
     private getSubjects = () => {
-        const url = "https://localhost:44383/api/Subjects";
+        const url = "https://ako-api.azurewebsites.net/api/Subjects";
         
         fetch(url,{
             method: 'GET',
@@ -98,7 +98,7 @@ class CourseContainer extends React.Component<IProps, IState> {
         }
 
        
-        let url: string = "https://localhost:44383/api"
+        let url: string = "https://ako-api.azurewebsites.net/api"
         if(subjectId == undefined) {
             url += "/Courses"
             fetch(url,{
@@ -207,7 +207,7 @@ class CourseContainer extends React.Component<IProps, IState> {
         </React.Fragment>;
     }
     public deleteCourse = (courseId: any): void => {
-        const url = "https://localhost:44383/api/Courses/" + courseId;
+        const url = "https://ako-api.azurewebsites.net/api/Courses/" + courseId;
         
         fetch(url,{
             method: 'DELETE'
