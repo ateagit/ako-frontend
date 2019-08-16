@@ -6,6 +6,7 @@ import CourseCreator from './components/coursecreator';
 import LoginPage from './components/loginpage';
 import { Route } from 'react-router';
 import CourseViewer from './components/courseviewer';
+import CourseCreatorEdit from './components/coursecreatoredit';
 
 const App: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ const App: React.FC = () => {
       <Route path = "/courses" component = {MainPage}/>
       <Route path = "/view/:id" component = {CourseViewer} />
       {/* <MainPage maxCols = {4} /> */}
-      <Route path = "/create" component = {CourseCreator} />
+      <Route path = "/update/:id" component = {CourseCreatorEdit} />
     </React.Fragment>
     
   );

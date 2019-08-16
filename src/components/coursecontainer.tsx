@@ -64,7 +64,7 @@ class CourseContainer extends React.Component<IProps, IState> {
         let subjectId: number | undefined = undefined;
         if(mainSubject == undefined) {
             // If there is no main subject in route
-            alert("No main subject") 
+            //alert("No main subject") 
         } else {
              // Replace - with space
             mainSubject = this.formattedString(mainSubject);
@@ -167,6 +167,10 @@ class CourseContainer extends React.Component<IProps, IState> {
                                             <Link to = {"/view/"+ course.courseId}>
                                                 <Button variant="outline-primary"> Start Course </Button>
                                             </Link>
+                                            <Link to = {"/update/"+ course.courseId}>
+                                                <Button variant="outline-primary"> Edit  Course </Button>
+                                            </Link>
+                                            <Button onClick = {() => this.deleteCourse(course.courseId)}>Delete Course</Button>
                                         </Col>
                                     </Row>
                                 </Card.Body>
@@ -179,6 +183,15 @@ class CourseContainer extends React.Component<IProps, IState> {
             
         );
         return courseContainer;
+    }
+    public deleteCourse = (courseId: any): void => {
+        const url = "https://localhost:44383/api/Courses/" + courseId;
+        
+        fetch(url,{
+            method: 'DELETE'
+        }).then((response: any) => {
+           return response.json();
+        })
     }
 }
 

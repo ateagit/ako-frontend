@@ -124,8 +124,7 @@ function getExtension(url: string) {
     return newUrl === undefined ? "dummy" : newUrl;
 }
 
-
-class CourseEditor extends React.Component<IProps, IState> {
+class CourseCreatorEdit extends React.Component<IProps, IState> {
     private _editorRef: React.RefObject<Editor>;
 
     constructor(props: any) {
@@ -164,8 +163,8 @@ class CourseEditor extends React.Component<IProps, IState> {
         });
     }
 
-    private postCourse = () => {
-        const url = "https://localhost:44383/api/Courses";
+    private updateCourse = () => {
+        const url = "https://localhost:44383/api/Courses/" + this.props.match.params.id;
 
         const titleElement = document.getElementById("title") as HTMLInputElement;
 
@@ -193,7 +192,7 @@ class CourseEditor extends React.Component<IProps, IState> {
         const jsonBody = JSON.stringify(_body);
 
         fetch(url,{
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 "content-type": "application/json"
@@ -211,12 +210,16 @@ class CourseEditor extends React.Component<IProps, IState> {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
+                "content-type":  'application/json'
             }
         }).then((response: any) => {
            return response.json();
         }).then((response: any) => {
-
-            let subjects: any[] = [];
+            // if(!response.ok) {
+            //     console.log("hi")
+            //     return;
+            // } else {
+                let subjects: any[] = [];
 
             response.forEach((element:any) => {
                   subjects.push({label: element.name, value: element.id})
@@ -228,11 +231,13 @@ class CourseEditor extends React.Component<IProps, IState> {
             this.setState({
                 subjectOptions: subjects
             })
+            // }
+            
         });
     }
 
     private getCourses = () => {
-        const url = "https://localhost:44383/api/Courses";
+        const url = "https://localhost:44383/api/Courses/"
 
         fetch(url,{
             method: 'GET',
@@ -242,7 +247,7 @@ class CourseEditor extends React.Component<IProps, IState> {
         }).then((response: any) => {
            return response.json();
         }).then((response: any) => {
-
+            console.log(response)
             let courses: any[] = [];
 
             response.forEach((element:any) => {
@@ -366,7 +371,10 @@ class CourseEditor extends React.Component<IProps, IState> {
         const editor = (
             <React.Fragment>
                 <Card style = {cardStyling}>
-                    <input id = "title" style = {{display: "block", border: "none", fontSize: "40px", marginBottom: "20px"}} type = "text" name = "title" placeholder = "Enter title here..."/>
+                    <input id = "title" 
+                    defaultValue = {this.state.selectedCourse.title}
+                    
+                    style = {{display: "block", border: "none", fontSize: "40px", marginBottom: "20px"}} type = "text" name = "title" placeholder = "Enter title here..."/>
 
                     <h4 style = {{color: "#403e3e"}} >Add Course Subject here</h4>
                     <Select 
@@ -403,7 +411,7 @@ class CourseEditor extends React.Component<IProps, IState> {
                         onPaste = {this.onDropOrPaste}
                         style = {{minHeight: "400px"}}
                     />
-                    <Button onClick = {this.postCourse}  variant="contained" color="secondary"> <CloudUploadIcon style = {{marginRight: "10px"}} /> Submit new course</Button> 
+                    <Button onClick = {this.updateCourse}  variant="contained" color="secondary"> <CloudUploadIcon style = {{marginRight: "10px"}} /> Update course</Button> 
                 </Card>
                 
             </React.Fragment>
@@ -540,4 +548,4 @@ class CourseEditor extends React.Component<IProps, IState> {
 
 }
 
-export default CourseEditor;
+export default CourseCreatorEdit;
