@@ -143,7 +143,7 @@ class CourseCreator extends React.Component<IProps, IState> {
     }
 
     private postCourse = () => {
-        const url = "https://localhost:44383/api/Courses";
+        const url = "https://ako-api.azurewebsites.net/api/Courses";
 
         const titleElement = document.getElementById("title") as HTMLInputElement;
 
@@ -183,7 +183,7 @@ class CourseCreator extends React.Component<IProps, IState> {
     }
 
     private getSubjects = () => {
-        const url = "https://localhost:44383/api/Subjects";
+        const url = "https://ako-api.azurewebsites.net/api/Subjects";
 
         fetch(url,{
             method: 'GET',
@@ -210,7 +210,7 @@ class CourseCreator extends React.Component<IProps, IState> {
     }
 
     private getCourses = () => {
-        const url = "https://localhost:44383/api/Courses";
+        const url = "https://ako-api.azurewebsites.net/api/Courses";
 
         fetch(url,{
             method: 'GET',

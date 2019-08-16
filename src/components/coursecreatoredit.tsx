@@ -145,7 +145,7 @@ class CourseCreatorEdit extends React.Component<IProps, IState> {
     }
 
     private getCourse = () => {
-        const url = "https://localhost:44383/api/Courses/" + this.props.match.params.id;
+        const url = "https://ako-api.azurewebsites.net/api/Courses/" + this.props.match.params.id;
 
         fetch(url,{
             method: 'GET',
@@ -164,7 +164,7 @@ class CourseCreatorEdit extends React.Component<IProps, IState> {
     }
 
     private updateCourse = () => {
-        const url = "https://localhost:44383/api/Courses/" + this.props.match.params.id;
+        const url = "https://ako-api.azurewebsites.net/api/Courses/" + this.props.match.params.id;
 
         const titleElement = document.getElementById("title") as HTMLInputElement;
 
@@ -204,7 +204,7 @@ class CourseCreatorEdit extends React.Component<IProps, IState> {
     }
 
     private getSubjects = () => {
-        const url = "https://localhost:44383/api/Subjects";
+        const url = "https://ako-api.azurewebsites.net/api/Subjects";
 
         fetch(url,{
             method: 'GET',
@@ -237,7 +237,7 @@ class CourseCreatorEdit extends React.Component<IProps, IState> {
     }
 
     private getCourses = () => {
-        const url = "https://localhost:44383/api/Courses/"
+        const url = "https://ako-api.azurewebsites.net/api/Courses/"
 
         fetch(url,{
             method: 'GET',
