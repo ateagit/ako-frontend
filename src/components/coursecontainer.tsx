@@ -7,7 +7,7 @@ import StarRatingComponent from 'react-star-rating-component';
 import { NodeData } from './mainpage';
 import { array } from 'prop-types';
 import { Link } from 'react-router-dom';
-
+import {FacebookShareButton, TwitterShareButton, FacebookIcon, TwitterIcon} from 'react-share';
 
 interface IState {
     subjectData: NodeData[],
@@ -146,6 +146,7 @@ class CourseContainer extends React.Component<IProps, IState> {
         console.log(this.props.match);
         const courseContainer:any = (
 
+            
             // Split into different Card components: e.g. Video Card, Image Card, Text Card
             this.state.courses.map((course: any, i: number) => {
                 return (
@@ -160,9 +161,22 @@ class CourseContainer extends React.Component<IProps, IState> {
                                         Course Creator: {course.creatorName == null ? course.creatorName : "Anonymous"}
                                     </Card.Text>
                                     <Row>
-                                        <Col style = {{fontSize: "23px", height: "100%"}}>
+                                        <Col>
+                                            <FacebookShareButton url = {"https://ako-frontend.azurewebsites.net/"}>
+                                                <FacebookIcon size={32} round={true} />
+                                            </FacebookShareButton>
+                                            <TwitterShareButton  url = {"https://ako-frontend.azurewebsites.net/"}>
+                                                <TwitterIcon size={32} round={true} />
+                                            </TwitterShareButton>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                    <Col style = {{fontSize: "23px", height: "100%"}}>
                                             <StarRatingComponent name="rate1" starCount={5} value={course.rating} />
                                         </Col>
+                                    </Row>
+                                    <Row>
+                                        
                                         <Col style = {{textAlign: "right"}}>
                                             <Link to = {"/view/"+ course.courseId}>
                                                 <Button variant="outline-primary"> Start Course </Button>
@@ -182,7 +196,15 @@ class CourseContainer extends React.Component<IProps, IState> {
             
             
         );
-        return courseContainer;
+        return <React.Fragment>
+            <Row>
+                <Link to = {"/create"} style = {{margin: "0 auto", marginTop: "20px"}}>
+                    <Button style = {{textAlign: "center"}}variant="outline-primary"> Create a Course </Button>
+                </Link>
+            </Row>
+            
+            {courseContainer}
+        </React.Fragment>;
     }
     public deleteCourse = (courseId: any): void => {
         const url = "https://localhost:44383/api/Courses/" + courseId;

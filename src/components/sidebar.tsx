@@ -44,14 +44,16 @@ const smallerStyle = {
     backgroundColor: "#f7f7f7",
     borderRight: "1px solid #ececec",
     zIndex: 4,
-    top: 0
-}
+    top: 0,
+    textAlign: "end"
+}as CSSProperties;
+
 class SideBar extends React.Component<IProps, IState> {
 
     constructor(props: IProps) {
         super(props);
         this.state = {
-            open: true
+            open: false
         };
     }
 
@@ -76,7 +78,7 @@ class SideBar extends React.Component<IProps, IState> {
             </div>) : 
             <div style = {smallerStyle}>
             <IconButton onClick = {this.toggleOpen} aria-label="delete">
-                <ArrowForwardIcon />
+                <ArrowForwardIcon style ={{padding: 0}}/>
             </IconButton>
             </div>
                     
